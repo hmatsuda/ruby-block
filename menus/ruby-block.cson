@@ -1,1 +1,10 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Ruby Block'
+      'command': 'ruby-block:go-to-block-starting-line'
+    ]
+  }
+]

@@ -2,6 +2,8 @@
   puts n
 end
 
+[1,2].each do |n|; puts n; end #aa
+
 for n in 1..3 do
   puts n
 end
@@ -10,9 +12,20 @@ end
 if true
   if true
     puts 'true'
-  end  
+  end
 else
   #do 
+end
+
+unless true
+end
+
+# one line if/unless statement
+if true
+  return if true
+  return unless true
+  var = if 1 == 1 ? "Yes" : "No" 
+  var = unless 1 == 1 ? "Yes" : "No" 
 end
 
 until true
