@@ -2,6 +2,17 @@ RubyBlockView = require './ruby-block-view'
 {CompositeDisposable} = require 'atom'
 
 module.exports = RubyBlock =
+  config:
+    highlightBlockStartingLine:
+      type: 'boolean'
+      description: 'Highlight block starting line'
+      default: true
+    DisplayBlockStartingLineInBottomPanel:
+      type: 'boolean'
+      description: 'Display block starting line in bottom panel'
+      default: true
+    
+
   rubyBlockView: null
   modalPanel: null
   rubyRootScope: 'source.ruby'
@@ -90,9 +101,11 @@ module.exports = RubyBlock =
                   @marker = editor.markBufferPosition([rowNumber, 0])
                   for type in ['gutter', 'line']
                     @blockStartedRowNumber = rowNumber
-                    editor.decorateMarker(@marker, {type: type, class: 'ruby-block-highlight'})
-                    @rubyBlockView.updateMessage(rowNumber)
-                    @modalPanel.show()
+                    if atom.config.get('ruby-block.highlightBlockStartingLine')
+                      editor.decorateMarker(@marker, {type: type, class: 'ruby-block-highlight'})
+                    if atom.config.get('ruby-block.DisplayBlockStartingLineInBottomPanel')
+                      @rubyBlockView.updateMessage(rowNumber)
+                      @modalPanel.show()
                   
                   return @marker
           
