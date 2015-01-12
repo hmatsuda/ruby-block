@@ -21,7 +21,7 @@ class RubyBlockView
     @element.removeChild(@element.firstChild) if @element.hasChildNodes()
     # Create message element
     message = document.createElement('div')
-    message.textContent = "#{rowNumber+1}: #{row}"
+    message.textContent = "Line: #{rowNumber+1} #{row}"
     message.classList.add('message')
     @element.appendChild(message)
     
