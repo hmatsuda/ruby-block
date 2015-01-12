@@ -34,8 +34,10 @@ module.exports = RubyBlock =
 
     @subscribeToActiveTextEditor()              
         
+    @subscriptions = new CompositeDisposable
     # Register command that toggles this view
-    # @subscriptions.add atom.commands.add 'atom-workspace', 'ruby-block:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-text-editor', 'ruby-block:go-to-block-starting-line': => 
+      @goToBlockStartingLine()
 
   deactivate: ->
     @modalPanel.destroy()
@@ -48,6 +50,9 @@ module.exports = RubyBlock =
   serialize: ->
     rubyBlockViewState: @rubyBlockView.serialize()
     
+  goToBlockStartingLine: ->
+    return atom.boot() unless @blockStartedRowNumber?
+    atom.workspace.getActiveTextEditor().setCursorBufferPosition([@blockStartedRowNumber, 0])
     
   subscribeToActiveTextEditor: ->
     @cursorSubscription?.dispose()
@@ -56,6 +61,7 @@ module.exports = RubyBlock =
     for scope in @getActiveTextEditor().getRootScopeDescriptor().scopes
       if scope.indexOf(@rubyRootScope) >= 0
         @cursorSubscription = @getActiveTextEditor()?.onDidChangeCursorPosition =>
+          @blockStartedRowNumber = null
           @modalPanel.hide() if @modalPanel.isVisible()
           @maker?.destroy()
           @maker = @hasBlockKeyword()
@@ -83,6 +89,7 @@ module.exports = RubyBlock =
                 if --@endBlockStacks is 0
                   @marker = editor.markBufferPosition([rowNumber, 0])
                   for type in ['gutter', 'line']
+                    @blockStartedRowNumber = rowNumber
                     editor.decorateMarker(@marker, {type: type, class: 'ruby-block-highlight'})
                     @rubyBlockView.updateMessage(rowNumber)
                     @modalPanel.show()
