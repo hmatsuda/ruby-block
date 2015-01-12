@@ -2,8 +2,8 @@
   "name": "ruby-block",
   "main": "./lib/ruby-block",
   "version": "0.0.0",
-  "description": "A short description of your package",
-  "repository": "https://github.com/atom/ruby-block",
+  "description": "Atom highlight matching ruby block",
+  "repository": "https://github.com/hmatsuda/ruby-block",
   "license": "MIT",
   "engines": {
     "atom": ">0.50.0"
