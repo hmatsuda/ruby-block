@@ -61,12 +61,11 @@ module.exports = RubyBlock =
 
   deactivate: ->
     @modalPanel.destroy()
-    # @subscriptions.dispose()
-    # @subscriptions.forEach (subscription) -> subscription.dispose()
+    @subscriptions.dispose()
     @activeItemSubscription.dispose()
     @cursorSubscription?.dispose()
     @rubyBlockView.destroy()
-
+    
   serialize: ->
     rubyBlockViewState: @rubyBlockView.serialize()
     
