@@ -4,10 +4,12 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-// atom-text-editor::shadow .ruby-block-highlight {
-//   background-color: @background-color-highlight;
-// }
-
+.editor.editor-colors .gutter .line-number {
+  &.ruby-block-highlight {
+    color: #fff;
+    background-color: @background-color-highlight;
+  }
+}
 
 // Remember: no default styling is provided for highlight decorations.
 .ruby-block-highlight .region {

@@ -137,8 +137,11 @@ module.exports = RubyBlock =
 
   highlightBlock: (rowNumber)->
     editor = @getActiveTextEditor()
-    @marker = editor.markBufferPosition([rowNumber, 0])
-    for type in ['gutter', 'line']
+    row = editor.lineTextForBufferRow(rowNumber)
+    firstCharPoint = row.search(/\S/)
+    @marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
+    
+    for type in ['gutter', 'highlight']
       @blockStartedRowNumber = rowNumber
       if atom.config.get('ruby-block.highlightBlockStartingLine')
         editor.decorateMarker(@marker, {type: type, class: 'ruby-block-highlight'})
