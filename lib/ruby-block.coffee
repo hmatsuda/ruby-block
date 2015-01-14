@@ -3,14 +3,18 @@ RubyBlockView = require './ruby-block-view'
 
 module.exports = RubyBlock =
   config:
-    highlightBlockStartingLine:
+    overlayRegion:
       type: 'boolean'
-      description: 'Highlight block starting line'
+      description: 'Overlays region'
       default: true
-    DisplayBlockStartingLineInBottomPanel:
+    highlightGutter:
       type: 'boolean'
-      description: 'Display block starting line in bottom panel'
-      default: true
+      description: 'Highlight gutter'
+      default: false
+    showBottomPanel:
+      type: 'boolean'
+      description: 'Show bottom panel'
+      default: false
     
 
   rubyBlockView: null
@@ -141,13 +145,14 @@ module.exports = RubyBlock =
     firstCharPoint = row.search(/\S/)
     @marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
     
-    for type in ['gutter', 'highlight']
-      @blockStartedRowNumber = rowNumber
-      if atom.config.get('ruby-block.highlightBlockStartingLine')
-        editor.decorateMarker(@marker, {type: type, class: 'ruby-block-highlight'})
-      if atom.config.get('ruby-block.DisplayBlockStartingLineInBottomPanel')
-        @rubyBlockView.updateMessage(rowNumber)
-        @modalPanel.show()
+    @blockStartedRowNumber = rowNumber
+    if atom.config.get('ruby-block.overlayRegion')
+      editor.decorateMarker(@marker, {type: 'highlight', class: 'ruby-block-highlight'})
+    if atom.config.get('ruby-block.highlightGutter')
+      editor.decorateMarker(@marker, {type: 'gutter', class: 'ruby-block-highlight'})
+    if atom.config.get('ruby-block.showBottomPanel')
+      @rubyBlockView.updateMessage(rowNumber)
+      @modalPanel.show()
     
     return @marker
     
