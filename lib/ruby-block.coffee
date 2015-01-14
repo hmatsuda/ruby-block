@@ -45,7 +45,7 @@ module.exports = RubyBlock =
 
   activate: (state) ->
     @rubyBlockView = new RubyBlockView(state.rubyBlockViewState)
-    @modalPanel = atom.workspace.addBottomPanel(item: @rubyBlockView.getElement(), visible: false)
+    @modalPanel = atom.workspace.addBottomPanel(item: @rubyBlockView.getElement(), visible: false, priority: 500)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @activeItemSubscription = atom.workspace.onDidChangeActivePaneItem (activeItem) =>
