@@ -54,7 +54,6 @@ module.exports = RubyBlock =
       @maker?.destroy()
       @modalPanel.hide() if @modalPanel.isVisible()
       @subscribeToActiveTextEditor()
-
     @subscribeToActiveTextEditor()              
         
     @subscriptions = new CompositeDisposable
@@ -72,6 +71,10 @@ module.exports = RubyBlock =
   serialize: ->
     rubyBlockViewState: @rubyBlockView.serialize()
     
+    
+  getActiveTextEditor: ->
+    atom.workspace.getActiveTextEditor()
+    
   goToMatchingLine: ->
     return atom.beep() unless @blockStartedRowNumber?
     editor = @getActiveTextEditor()
@@ -81,19 +84,16 @@ module.exports = RubyBlock =
     
   subscribeToActiveTextEditor: ->
     @cursorSubscription?.dispose()
+    editor = @getActiveTextEditor()
     
-    return unless @getActiveTextEditor()?
-    if @getActiveTextEditor().getRootScopeDescriptor().scopes[0].indexOf(@rubyRootScope) >= 0
-      @cursorSubscription = @getActiveTextEditor()?.onDidChangeCursorPosition =>
+    return unless editor?
+    if editor.getRootScopeDescriptor().scopes[0].indexOf(@rubyRootScope) >= 0
+      @cursorSubscription = editor.onDidChangeCursorPosition =>
         @blockStartedRowNumber = null
         @modalPanel.hide() if @modalPanel.isVisible()
         @maker?.destroy()
         @maker = @searchForBlock()
       @maker = @searchForBlock()
-      
-
-  getActiveTextEditor: ->
-    atom.workspace.getActiveTextEditor()
     
   searchForBlock: ->
     editor = @getActiveTextEditor()
