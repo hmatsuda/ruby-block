@@ -145,16 +145,16 @@ module.exports = RubyBlock =
     editor = @getActiveTextEditor()
     row = editor.lineTextForBufferRow(rowNumber)
     firstCharPoint = row.search(/\S/)
-    @marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
+    marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
     
     @blockStartedRowNumber = rowNumber
     if atom.config.get('ruby-block.highlightLine')
-      editor.decorateMarker(@marker, {type: 'highlight', class: 'ruby-block-highlight'})
+      editor.decorateMarker(marker, {type: 'highlight', class: 'ruby-block-highlight'})
     if atom.config.get('ruby-block.highlightGutter')
-      editor.decorateMarker(@marker, {type: 'gutter', class: 'ruby-block-highlight'})
+      editor.decorateMarker(marker, {type: 'gutter', class: 'ruby-block-highlight'})
     if atom.config.get('ruby-block.showBottomPanel')
       @rubyBlockView.updateMessage(rowNumber)
       @modalPanel.show()
     
-    return @marker
+    return marker
     
