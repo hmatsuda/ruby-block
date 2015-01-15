@@ -14,7 +14,7 @@ module.exports = RubyBlock =
     showBottomPanel:
       type: 'boolean'
       description: 'Show bottom panel'
-      default: false
+      default: true
     
 
   rubyBlockView: null
