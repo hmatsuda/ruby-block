@@ -39,8 +39,9 @@ module.exports = RubyBlock =
   ]
   
   rubyEndBlockScope: 'keyword.control.ruby'
-  rubyDoScope: 'keyword.control.start-block.ruby'
   rubyEndBlockName: 'end'
+  
+  rubyDoScope: 'keyword.control.start-block.ruby'
   
   endBlockStack: []
 
