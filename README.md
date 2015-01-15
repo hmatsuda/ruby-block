@@ -19,7 +19,7 @@ Overlay is enable by default.
 ![config screenshot](http://cl.ly/image/1q2C1u0n1a1p/Settings_-__Users_hakutoitoi__atom_packages_ruby-block_-_Atom.png)
 
 ## Thanks
-Inspired by the Emacs [ruby-block.el](https://github.com/adolfosousa/ruby-block.el) by [adolfosousa](https://github.com/adolfosousa).
+Inspired by the Emacs [Ruby Block Mode](http://www.emacswiki.org/emacs/RubyBlockModel) by khiker
 
 ## Contributing
 1. Fork it
