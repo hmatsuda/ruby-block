@@ -6,7 +6,7 @@ Highlight matching ruby block.
 
 ## Features
 - Highlight matching ruby block
-- Go to block starting row (`ctrl-g b`)
+- Go to matching line (`ctrl-g b`)
 
 ## Options
 You can change behavior to highlight block.
