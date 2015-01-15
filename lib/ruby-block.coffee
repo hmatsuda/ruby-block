@@ -84,7 +84,7 @@ module.exports = RubyBlock =
   subscribeToActiveTextEditor: ->
     @cursorSubscription?.dispose()
     
-    return if atom.packages.isPackageActive('language-ruby') is false or !@getActiveTextEditor()?
+    return unless @getActiveTextEditor()?
     if @getActiveTextEditor().getRootScopeDescriptor().scopes[0].indexOf(@rubyRootScope) >= 0
       @cursorSubscription = @getActiveTextEditor()?.onDidChangeCursorPosition =>
         @blockStartedRowNumber = null
