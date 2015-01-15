@@ -76,7 +76,10 @@ module.exports = RubyBlock =
     
   goToMatchingLine: ->
     return atom.boot() unless @blockStartedRowNumber?
-    atom.workspace.getActiveTextEditor().setCursorBufferPosition([@blockStartedRowNumber, 0])
+    editor = @getActiveTextEditor()
+    row = editor.lineTextForBufferRow(@blockStartedRowNumber)
+    firstCharPoint = row.search(/\S/)
+    editor.setCursorBufferPosition([@blockStartedRowNumber, firstCharPoint])
     
   subscribeToActiveTextEditor: ->
     @cursorSubscription?.dispose()
