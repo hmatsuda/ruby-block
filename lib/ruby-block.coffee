@@ -53,6 +53,7 @@ module.exports = RubyBlock =
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @activeItemSubscription = atom.workspace.onDidChangeActivePaneItem (activeItem) =>
+      @maker?.destroy()
       @modalPanel.hide() if @modalPanel.isVisible()
       @subscribeToActiveTextEditor()
 
