@@ -75,7 +75,7 @@ module.exports = RubyBlock =
     rubyBlockViewState: @rubyBlockView.serialize()
     
   goToMatchingLine: ->
-    return atom.boot() unless @blockStartedRowNumber?
+    return atom.beep() unless @blockStartedRowNumber?
     editor = @getActiveTextEditor()
     row = editor.lineTextForBufferRow(@blockStartedRowNumber)
     firstCharPoint = row.search(/\S/)
