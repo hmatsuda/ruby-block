@@ -10,9 +10,10 @@ Highlight matching ruby block.
 
 ## Options
 You can change behibior to highlight block.
-1. Overlays region
-2. Highlight gutter
-3. Show block starting line in bottom panel(like Emacs minibuffer)
+
+1. Show block starting line in bottom panel(like Emacs minibuffer)
+2. Overlays region
+3. Highlight gutter
 
 Overlay is enable by default.
 
