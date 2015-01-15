@@ -61,8 +61,8 @@ module.exports = RubyBlock =
         
     @subscriptions = new CompositeDisposable
     # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-text-editor', 'ruby-block:go-to-block-starting-line': => 
-      @goToBlockStartingLine()
+    @subscriptions.add atom.commands.add 'atom-text-editor', 'ruby-block:go-to-matching-line': => 
+      @goToMatchingLine()
 
   deactivate: ->
     @modalPanel.destroy()
@@ -74,7 +74,7 @@ module.exports = RubyBlock =
   serialize: ->
     rubyBlockViewState: @rubyBlockView.serialize()
     
-  goToBlockStartingLine: ->
+  goToMatchingLine: ->
     return atom.boot() unless @blockStartedRowNumber?
     atom.workspace.getActiveTextEditor().setCursorBufferPosition([@blockStartedRowNumber, 0])
     
