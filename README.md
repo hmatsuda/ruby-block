@@ -9,24 +9,24 @@ Highlight matching ruby block.
 - Go to block starting row (`ctrl-g b`)
 
 ## Options
-You can change behibior to highlight block.
-
-- Show block starting line in bottom panel(like Emacs minibuffer)
+You can change behavior to highlight block.
+  
+- Show beginning of block into bottom panel(like Emacs minibuffer)
 
 ![show bottom panel](http://cl.ly/image/0d081N2t2p0f/Image%202015-01-16%20at%201.05.32%20%E5%8D%88%E5%89%8D.png)
 
-- Overlays region 
+- Overlays region of beginning of block
 
 ![overlay region](http://cl.ly/image/1v3N0F1R3B15/test_rb_-__Users_hakutoitoi__atom_packages_ruby-block_-_Atom.png)
 
-- Highlight gutter 
+- Highlight gutter of beginning of block
 
 ![highlight gutter](http://cl.ly/image/1x0g1e291k0v/Image%202015-01-16%20at%201.03.15%20%E5%8D%88%E5%89%8D.png)
 
 Overlay and bottom panel are enable by default.
 
 ## Thanks
-Inspired by the Emacs [Ruby Block Mode](https://github.com/juszczakn/ruby-block) by [juszczakn](https://github.com/juszczakn)
+Porting the features of [juszczakn](https://github.com/juszczakn)'s great Emacs [Ruby Block Mode](https://github.com/juszczakn/ruby-block) to Atom.
 
 ## Contributing
 1. Fork it
