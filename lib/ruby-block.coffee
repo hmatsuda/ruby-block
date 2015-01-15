@@ -3,18 +3,15 @@ RubyBlockView = require './ruby-block-view'
 
 module.exports = RubyBlock =
   config:
-    overlayRegion:
+    showBottomPanel:
       type: 'boolean'
-      description: 'Overlays region'
+      default: true
+    highlightLine:
+      type: 'boolean'
       default: true
     highlightGutter:
       type: 'boolean'
-      description: 'Highlight gutter'
       default: false
-    showBottomPanel:
-      type: 'boolean'
-      description: 'Show bottom panel'
-      default: true
     
 
   rubyBlockView: null
@@ -150,7 +147,7 @@ module.exports = RubyBlock =
     @marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
     
     @blockStartedRowNumber = rowNumber
-    if atom.config.get('ruby-block.overlayRegion')
+    if atom.config.get('ruby-block.highlightLine')
       editor.decorateMarker(@marker, {type: 'highlight', class: 'ruby-block-highlight'})
     if atom.config.get('ruby-block.highlightGutter')
       editor.decorateMarker(@marker, {type: 'gutter', class: 'ruby-block-highlight'})
