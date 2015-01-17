@@ -1,4 +1,4 @@
-# ruby-block package
+# ruby-block package [![Build Status](https://travis-ci.org/hmatsuda/ruby-block.svg?branch=master)](https://travis-ci.org/hmatsuda/ruby-block)
 
 ![A screenshot of your package](http://cl.ly/image/194216251H3v/ruby-block.gif)
 
