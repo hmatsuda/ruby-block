@@ -1,62 +1,56 @@
 RubyBlock = require '../lib/ruby-block'
 
-# Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
-#
-# To run a specific `it` or `describe` block add an `f` to the front (e.g. `fit`
-# or `fdescribe`). Remove the `f` to unfocus the block.
-
 describe "RubyBlock", ->
-  [workspaceElement, activationPromise] = []
+  [workspaceElement, editor, editorElement, markers, gutters, rubyBlockElement, bottomPanels] =  []
 
   beforeEach ->
-    workspaceElement = atom.views.getView(atom.workspace)
-    activationPromise = atom.packages.activatePackage('ruby-block')
-
-  describe "when the ruby-block:toggle event is triggered", ->
-    it "hides and shows the modal panel", ->
-      # Before the activation event the view is not on the DOM, and no panel
-      # has been created
-      expect(workspaceElement.querySelector('.ruby-block')).not.toExist()
-
-      # This is an activation event, triggering it will cause the package to be
-      # activated.
-      atom.commands.dispatch workspaceElement, 'ruby-block:toggle'
-
-      waitsForPromise ->
-        activationPromise
-
-      runs ->
-        expect(workspaceElement.querySelector('.ruby-block')).toExist()
-
-        rubyBlockElement = workspaceElement.querySelector('.ruby-block')
-        expect(rubyBlockElement).toExist()
-
-        rubyBlockPanel = atom.workspace.panelForItem(rubyBlockElement)
-        expect(rubyBlockPanel.isVisible()).toBe true
-        atom.commands.dispatch workspaceElement, 'ruby-block:toggle'
-        expect(rubyBlockPanel.isVisible()).toBe false
-
-    it "hides and shows the view", ->
-      # This test shows you an integration test testing at the view level.
-
-      # Attaching the workspaceElement to the DOM is required to allow the
-      # `toBeVisible()` matchers to work. Anything testing visibility or focus
-      # requires that the workspaceElement is on the DOM. Tests that attach the
-      # workspaceElement to the DOM are generally slower than those off DOM.
+    waitsForPromise -> atom.packages.activatePackage('language-ruby')
+    waitsForPromise -> atom.workspace.open('test.rb')  
+    waitsForPromise ->
+      atom.packages.activatePackage('ruby-block').then (pkg) ->
+        rubyBlock = pkg.mainModule
+        atom.config.set 'ruby-block.highlightGutter', true
+        
+    runs ->
+      workspaceElement = atom.views.getView(atom.workspace)
       jasmine.attachToDOM(workspaceElement)
+      
+      editor = atom.workspace.getActiveTextEditor()
+      editorElement = atom.views.getView(editor)
 
-      expect(workspaceElement.querySelector('.ruby-block')).not.toExist()
-
-      # This is an activation event, triggering it causes the package to be
-      # activated.
-      atom.commands.dispatch workspaceElement, 'ruby-block:toggle'
-
-      waitsForPromise ->
-        activationPromise
-
-      runs ->
-        # Now we can test for view visibility
-        rubyBlockElement = workspaceElement.querySelector('.ruby-block')
-        expect(rubyBlockElement).toBeVisible()
-        atom.commands.dispatch workspaceElement, 'ruby-block:toggle'
-        expect(rubyBlockElement).not.toBeVisible()
+  describe "when cursor is on the 'end'", ->
+    beforeEach ->
+      editor.setCursorBufferPosition [2, 0]
+      markers = editorElement.shadowRoot.querySelectorAll('.region')
+      gutters = editorElement.shadowRoot.querySelectorAll('.gutter .ruby-block-highlight')
+      rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
+      bottomPanels = atom.workspace.getBottomPanels()
+      
+    it 'highlights line', ->
+      expect(markers.length).toBe 1
+      
+    it 'highlights gutter', ->
+      expect(gutters.length).toBe 1
+      
+    it 'shows view in bottom panel', ->
+      expect(rubyBlockElement).toExist
+      expect(bottomPanels[0].isVisible()).toBe true
+      
+  describe "when cursor is not on the 'end'", ->
+    beforeEach ->
+      editor.setCursorBufferPosition [3, 0]
+      markers = editorElement.shadowRoot.querySelectorAll('.region')
+      gutters = editorElement.shadowRoot.querySelectorAll('.gutter .ruby-block-highlight')
+      rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
+      bottomPanels = atom.workspace.getBottomPanels()
+    
+    it "doesn't highlight line", ->
+      expect(markers.length).toBe 0
+  
+    it "doesn't highlight gutter", ->
+      expect(gutters.length).toBe 0
+    
+    it 'shows view in bottom panel', ->
+      expect(rubyBlockElement).toExist
+      expect(bottomPanels[0].isVisible()).toBe false
+    
