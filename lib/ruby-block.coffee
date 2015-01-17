@@ -98,7 +98,7 @@ module.exports = RubyBlock =
   searchForBlock: ->
     editor = @getActiveTextEditor()
     grammar = editor.getGrammar()
-    cursor = editor.getCursor()
+    cursor = editor.getLastCursor()
     currentRowNumber = cursor.getBufferRow()
     
     # scope and word matches 'end'
