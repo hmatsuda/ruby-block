@@ -8,6 +8,9 @@ Highlight matching ruby block.
 - Highlight matching ruby block
 - Go to matching line (`ctrl-g b`)
 
+## Requirements
+Enable the [`language-ruby`](https://atom.io/packages/language-ruby) package.
+
 ## Settings
 You can change behavior to highlight block by settings menu.
   
