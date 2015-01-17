@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "description": "Atom highlight matching ruby block",
   "repository": "https://github.com/hmatsuda/ruby-block",
-  "license": "MIT",
+  "license": "GPLv2",
   "engines": {
     "atom": ">0.50.0"
   },
