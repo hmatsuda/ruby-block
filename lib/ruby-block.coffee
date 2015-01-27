@@ -9,7 +9,7 @@ module.exports = RubyBlock =
     highlightLine:
       type: 'boolean'
       default: true
-    highlightGutter:
+    highlightLineNumber:
       type: 'boolean'
       default: false
     
@@ -150,8 +150,8 @@ module.exports = RubyBlock =
     @blockStartedRowNumber = rowNumber
     if atom.config.get('ruby-block.highlightLine')
       editor.decorateMarker(marker, {type: 'highlight', class: 'ruby-block-highlight'})
-    if atom.config.get('ruby-block.highlightGutter')
-      editor.decorateMarker(marker, {type: 'gutter', class: 'ruby-block-highlight'})
+    if atom.config.get('ruby-block.highlightLineNumber')
+      editor.decorateMarker(marker, {type: 'line-number', class: 'ruby-block-highlight'})
     if atom.config.get('ruby-block.showBottomPanel')
       @rubyBlockView.updateMessage(rowNumber)
       @modalPanel.show()
