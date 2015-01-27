@@ -1,7 +1,7 @@
 RubyBlock = require '../lib/ruby-block'
 
 describe "RubyBlock", ->
-  [workspaceElement, editor, editorElement, markers, gutters, rubyBlockElement, bottomPanels] =  []
+  [workspaceElement, editor, editorElement, markers, lineNumbers, rubyBlockElement, bottomPanels] =  []
 
   beforeEach ->
     waitsForPromise -> atom.packages.activatePackage('language-ruby')
@@ -9,7 +9,7 @@ describe "RubyBlock", ->
     waitsForPromise ->
       atom.packages.activatePackage('ruby-block').then (pkg) ->
         rubyBlock = pkg.mainModule
-        atom.config.set 'ruby-block.highlightGutter', true
+        atom.config.set 'ruby-block.highlightLineNumber', true
         
     runs ->
       workspaceElement = atom.views.getView(atom.workspace)
@@ -22,7 +22,7 @@ describe "RubyBlock", ->
     beforeEach ->
       editor.setCursorBufferPosition [2, 0]
       markers = editorElement.shadowRoot.querySelectorAll('.region')
-      gutters = editorElement.shadowRoot.querySelectorAll('.gutter .ruby-block-highlight')
+      lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
       rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
       bottomPanels = atom.workspace.getBottomPanels()
       
@@ -30,7 +30,7 @@ describe "RubyBlock", ->
       expect(markers.length).toBe 1
       
     it 'highlights gutter', ->
-      expect(gutters.length).toBe 1
+      expect(lineNumbers.length).toBe 1
       
     it 'shows view in bottom panel', ->
       expect(rubyBlockElement).toExist
@@ -40,7 +40,7 @@ describe "RubyBlock", ->
     beforeEach ->
       editor.setCursorBufferPosition [3, 0]
       markers = editorElement.shadowRoot.querySelectorAll('.region')
-      gutters = editorElement.shadowRoot.querySelectorAll('.gutter .ruby-block-highlight')
+      lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
       rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
       bottomPanels = atom.workspace.getBottomPanels()
     
@@ -48,7 +48,7 @@ describe "RubyBlock", ->
       expect(markers.length).toBe 0
   
     it "doesn't highlight gutter", ->
-      expect(gutters.length).toBe 0
+      expect(lineNumbers.length).toBe 0
     
     it 'shows view in bottom panel', ->
       expect(rubyBlockElement).toExist

@@ -31,7 +31,7 @@ Highlighting line and bottom panel are enable by default.
 ## Overwriting default styles
 If you want to change default highliting color, just add styles with preference for color like below into `styles.less`.
 ```less
-.editor, :host, atom-text-editor, atom-text-editor::shadow {
+:host, atom-text-editor, atom-text-editor::shadow {
   .line-number.ruby-block-highlight {
     background-color: red;
   }
