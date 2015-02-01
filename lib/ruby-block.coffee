@@ -51,7 +51,7 @@ module.exports = RubyBlock =
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @activeItemSubscription = atom.workspace.onDidChangeActivePaneItem (activeItem) =>
-      @maker?.destroy()
+      @marker?.destroy()
       @modalPanel.hide() if @modalPanel.isVisible()
       @subscribeToActiveTextEditor()
     @subscribeToActiveTextEditor()              
@@ -62,6 +62,7 @@ module.exports = RubyBlock =
       @goToMatchingLine()
 
   deactivate: ->
+    @marker?.destroy()
     @modalPanel.destroy()
     @subscriptions.dispose()
     @activeItemSubscription.dispose()
@@ -91,9 +92,9 @@ module.exports = RubyBlock =
       @cursorSubscription = editor.onDidChangeCursorPosition =>
         @blockStartedRowNumber = null
         @modalPanel.hide() if @modalPanel.isVisible()
-        @maker?.destroy()
-        @maker = @searchForBlock()
-      @maker = @searchForBlock()
+        @marker?.destroy()
+        @searchForBlock()
+      @searchForBlock()
     
   searchForBlock: ->
     editor = @getActiveTextEditor()
@@ -145,16 +146,14 @@ module.exports = RubyBlock =
     editor = @getActiveTextEditor()
     row = editor.lineTextForBufferRow(rowNumber)
     firstCharPoint = row.search(/\S/)
-    marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
+    @marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
     
     @blockStartedRowNumber = rowNumber
     if atom.config.get('ruby-block.highlightLine')
-      editor.decorateMarker(marker, {type: 'highlight', class: 'ruby-block-highlight'})
+      editor.decorateMarker(@marker, {type: 'highlight', class: 'ruby-block-highlight'})
     if atom.config.get('ruby-block.highlightLineNumber')
-      editor.decorateMarker(marker, {type: 'line-number', class: 'ruby-block-highlight'})
+      editor.decorateMarker(@marker, {type: 'line-number', class: 'ruby-block-highlight'})
     if atom.config.get('ruby-block.showBottomPanel')
       @rubyBlockView.updateMessage(rowNumber)
       @modalPanel.show()
-    
-    return marker
     
