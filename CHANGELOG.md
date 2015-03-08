@@ -1,3 +1,6 @@
+## 0.3.0
+* Support else, elsif, when, rescue and ensure
+
 ## 0.2.1
 * Remove Deprecations
 

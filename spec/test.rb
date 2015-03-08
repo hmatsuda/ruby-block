@@ -1,3 +1,4 @@
+
 [1,2,3].each do |n|
   puts n
 end
@@ -13,11 +14,14 @@ if true
   if true
     puts 'true'
   end
+elsif true
+  # do
 else
   #do 
 end
 
 unless true
+  # do
 end
 
 # one line if/unless statement
@@ -37,16 +41,24 @@ while true do
 end
 
 class Animal
+  # define some method
 end
 
 module Taggable
+  # define some method
 end
 
 case num
-when 1 then '1'
+when 1 then
+  # do
+when 2 then
+  # do
+else
+  # do
 end
 
 def func
+  # do
 end
 
 begin
