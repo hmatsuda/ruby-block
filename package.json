@@ -1,7 +1,7 @@
 {
   "name": "ruby-block",
   "main": "./lib/ruby-block",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Atom highlight matching ruby block",
   "repository": "https://github.com/hmatsuda/ruby-block",
   "license": "GPLv2",
