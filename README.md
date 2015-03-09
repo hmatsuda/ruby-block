@@ -1,8 +1,11 @@
 # ruby-block package [![Build Status](https://travis-ci.org/hmatsuda/ruby-block.svg?branch=master)](https://travis-ci.org/hmatsuda/ruby-block)
 
-![A screenshot of your package](http://cl.ly/image/194216251H3v/ruby-block.gif)
+![A screenshot of your package](http://cl.ly/image/181n0f1R1U0O/ruby-block.gif)
 
-Highlight matching ruby block.
+Highlight matching ruby block when cursor is on the following keywords:
+
+`end`, `elsif`, `else`, `when` `rescue` and `ensure`.
+
 
 ## Features
 - Highlight matching ruby block

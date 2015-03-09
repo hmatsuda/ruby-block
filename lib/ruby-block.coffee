@@ -38,8 +38,17 @@ module.exports = RubyBlock =
      'keyword.control.def.ruby' 
   ]
   
-  rubyEndBlockScope: 'keyword.control.ruby'
   rubyEndBlockName: 'end'
+
+  rubyKeywordControlScope: 'keyword.control.ruby'
+  rubyKeywordControlNames: [
+    'end'
+    'elsif'
+    'else'
+    'when'
+    'rescue'
+    'ensure'
+  ]
   
   rubyDoScope: 'keyword.control.start-block.ruby'
   
@@ -103,8 +112,8 @@ module.exports = RubyBlock =
     currentRowNumber = cursor.getBufferRow()
     
     # scope and word matches 'end'
-    return if cursor.getScopeDescriptor().scopes.indexOf(@rubyEndBlockScope) is -1 or 
-              editor.getWordUnderCursor() isnt @rubyEndBlockName
+    return if cursor.getScopeDescriptor().scopes.indexOf(@rubyKeywordControlScope) is -1 or 
+              @rubyKeywordControlNames.indexOf(editor.getWordUnderCursor()) is -1
     
     @endBlockStack.push(editor.getWordUnderCursor)
     
@@ -129,7 +138,7 @@ module.exports = RubyBlock =
       
       for token in filteredTokens by -1
         for scope in token.scopes
-          if scope is @rubyEndBlockScope and token.value is @rubyEndBlockName
+          if scope is @rubyKeywordControlScope and token.value is @rubyEndBlockName
             @endBlockStack.push(scope.value)
           else if @rubyStartBlockScopes.indexOf(scope) >= 0 and
                   @rubyStartBlockNames.indexOf(token.value) >= 0

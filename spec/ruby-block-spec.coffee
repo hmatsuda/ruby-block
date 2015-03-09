@@ -20,7 +20,7 @@ describe "RubyBlock", ->
 
   describe "when cursor is on the 'end'", ->
     beforeEach ->
-      editor.setCursorBufferPosition [2, 0]
+      editor.setCursorBufferPosition [3, 0]
       markers = editorElement.shadowRoot.querySelectorAll('.region')
       lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
       rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
@@ -38,7 +38,7 @@ describe "RubyBlock", ->
       
   describe "when cursor is not on the 'end'", ->
     beforeEach ->
-      editor.setCursorBufferPosition [3, 0]
+      editor.setCursorBufferPosition [4, 0]
       markers = editorElement.shadowRoot.querySelectorAll('.region')
       lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
       rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
