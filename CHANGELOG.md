@@ -1,3 +1,6 @@
+## 0.3.1
+* Fix bug that highlights a wrong line when assigning variable with case statement
+
 ## 0.3.0
 * Support else, elsif, when, rescue and ensure
 

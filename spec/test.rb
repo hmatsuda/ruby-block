@@ -57,6 +57,15 @@ else
   # do
 end
 
+var = case num
+when 1 then
+  # do
+when 2 then
+  # do
+else
+  # do
+end
+
 def func
   # do
 end
