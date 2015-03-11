@@ -142,11 +142,19 @@ module.exports = RubyBlock =
             @endBlockStack.push(scope.value)
           else if @rubyStartBlockScopes.indexOf(scope) >= 0 and
                   @rubyStartBlockNames.indexOf(token.value) >= 0
-            for firstTokenScope in filteredTokens[0].scopes
-              if @rubyStartBlockScopes.indexOf(firstTokenScope) >= 0 and
-                 @rubyStartBlockNames.indexOf(filteredTokens[0].value) >= 0
-                @endBlockStack.pop()
-                break
+            # Support assigning variable with a case statement
+            # e.g. 
+            # var = case cond
+            #       when 1 then 10
+            #       end
+            if token.value is 'case'
+              @endBlockStack.pop()
+            else
+              for firstTokenScope in filteredTokens[0].scopes
+                if @rubyStartBlockScopes.indexOf(firstTokenScope) >= 0 and
+                   @rubyStartBlockNames.indexOf(filteredTokens[0].value) >= 0
+                  @endBlockStack.pop()
+                  break
               
             if @endBlockStack.length is 0
               return @highlightBlock(rowNumber)
