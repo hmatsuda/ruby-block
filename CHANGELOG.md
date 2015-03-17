@@ -1,3 +1,6 @@
+## 0.3.2
+* Fix bug that highlights a wrong line when while-do statement is in block
+
 ## 0.3.1
 * Fix bug that highlights a wrong line when assigning variable with case statement
 
