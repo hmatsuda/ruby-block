@@ -38,6 +38,7 @@ module.exports = RubyBlock =
      'keyword.control.def.ruby' 
   ]
   
+  rubyDoBlockName: 'do'
   rubyEndBlockName: 'end'
 
   rubyKeywordControlScope: 'keyword.control.ruby'
@@ -132,7 +133,7 @@ module.exports = RubyBlock =
       
       startBlock = (token for token in filteredTokens when token.scopes.indexOf(@rubyDoScope) >= 0)
       if startBlock.length > 0
-        @endBlockStack.pop()
+        @endBlockStack.pop() if token.value isnt @rubyDoBlockName
         if @endBlockStack.length is 0
           return @highlightBlock(rowNumber)
       

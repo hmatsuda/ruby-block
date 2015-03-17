@@ -36,8 +36,10 @@ until true
   puts 'true'
 end
 
-while true do
-  # do
+if true
+  while true do
+    # do
+  end
 end
 
 class Animal
