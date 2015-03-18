@@ -3,6 +3,9 @@
   puts n
 end
 
+version :default do
+  # do
+end
 [1,2].each do |n|; puts n; end #aa
 
 for n in 1..3 do
