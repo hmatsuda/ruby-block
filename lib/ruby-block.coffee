@@ -1,4 +1,3 @@
-RubyBlockView = require './ruby-block-view'
 {CompositeDisposable, Point} = require 'atom'
 
 module.exports = RubyBlock =
@@ -56,32 +55,29 @@ module.exports = RubyBlock =
 
   endBlockStack: []
 
-  activate: (state) ->
-    @rubyBlockView = new RubyBlockView(state.rubyBlockViewState)
-    @modalPanel = atom.workspace.addBottomPanel(item: @rubyBlockView.getElement(), visible: false, priority: 500)
-
+  activate: ->
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @activeItemSubscription = atom.workspace.observeActivePaneItem (activeItem) =>
       @marker?.destroy()
-      @modalPanel.hide() if @modalPanel.isVisible()
+      @modalPanel.hide() if @modalPanel?.isVisible()
       @subscribeToActiveTextEditor()
-
-    @subscriptions = new CompositeDisposable
-    # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-text-editor', 'ruby-block:go-to-matching-line': =>
-      @goToMatchingLine()
 
   deactivate: ->
     @marker?.destroy()
-    @modalPanel.destroy()
-    @subscriptions.dispose()
-    @activeItemSubscription.dispose()
-    @cursorSubscription?.dispose()
-    @rubyBlockView.destroy()
+    @marker = null
+    @modalPanel?.destroy()
+    @modalPanel = null
+    @activeItemSubscription?.dispose()
+    @activeItemSubscription = null
+    @editorSubscriptions?.dispose()
+    @editorSubscriptions = null
+    @rubyBlockView?.destroy()
+    @rubyBlockView = null
 
-  serialize: ->
-    rubyBlockViewState: @rubyBlockView.serialize()
-
+  init: ->
+    RubyBlockView = require './ruby-block-view'
+    @rubyBlockView = new RubyBlockView
+    @modalPanel = atom.workspace.addBottomPanel(item: @rubyBlockView.getElement(), visible: false, priority: 500)
 
   getActiveTextEditor: ->
     atom.workspace.getActiveTextEditor()
@@ -94,17 +90,29 @@ module.exports = RubyBlock =
     editor.setCursorBufferPosition([@blockStartedRowNumber, firstCharPoint])
 
   subscribeToActiveTextEditor: ->
-    @cursorSubscription?.dispose()
+    @editorSubscriptions?.dispose()
     editor = @getActiveTextEditor()
 
     return unless editor?
-    if editor.getRootScopeDescriptor().scopes[0].indexOf(@rubyRootScope) >= 0
-      @cursorSubscription = editor.onDidChangeCursorPosition =>
-        @blockStartedRowNumber = null
-        @modalPanel.hide() if @modalPanel.isVisible()
-        @marker?.destroy()
-        @searchForBlock()
+    return if editor.getRootScopeDescriptor().scopes[0].indexOf(@rubyRootScope) is -1
+
+    @init() unless @rubyBlockView?
+
+    editorElement = atom.views.getView(editor)
+    @editorSubscriptions = new CompositeDisposable
+
+    @editorSubscriptions.add atom.commands.add(editorElement,
+      'ruby-block:go-to-matching-line': =>
+        @goToMatchingLine()
+    )
+
+    @editorSubscriptions.add editor.onDidChangeCursorPosition =>
+      @blockStartedRowNumber = null
+      @modalPanel.hide() if @modalPanel.isVisible()
+      @marker?.destroy()
       @searchForBlock()
+
+    @searchForBlock()
 
   searchForBlock: ->
     editor = @getActiveTextEditor()
