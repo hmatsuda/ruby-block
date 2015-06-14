@@ -12,12 +12,12 @@ module.exports = RubyBlock =
     highlightLineNumber:
       type: 'boolean'
       default: false
-    
+
 
   rubyBlockView: null
   modalPanel: null
   rubyRootScope: 'source.ruby'
-  
+
   rubyStartBlockNames: [
     'for'
     'if'
@@ -32,12 +32,12 @@ module.exports = RubyBlock =
   ]
   rubyStartBlockScopes: [
      'keyword.control.ruby'
-     'keyword.control.start-block.ruby' 
-     'keyword.control.class.ruby' 
-     'keyword.control.module.ruby' 
-     'keyword.control.def.ruby' 
+     'keyword.control.start-block.ruby'
+     'keyword.control.class.ruby'
+     'keyword.control.module.ruby'
+     'keyword.control.def.ruby'
   ]
-  
+
   rubyWhileBlockName: 'while'
   rubyDoBlockName: 'do'
   rubyEndBlockName: 'end'
@@ -51,9 +51,9 @@ module.exports = RubyBlock =
     'rescue'
     'ensure'
   ]
-  
+
   rubyDoScope: 'keyword.control.start-block.ruby'
-  
+
   endBlockStack: []
 
   activate: (state) ->
@@ -61,15 +61,14 @@ module.exports = RubyBlock =
     @modalPanel = atom.workspace.addBottomPanel(item: @rubyBlockView.getElement(), visible: false, priority: 500)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @activeItemSubscription = atom.workspace.onDidChangeActivePaneItem (activeItem) =>
+    @activeItemSubscription = atom.workspace.observeActivePaneItem (activeItem) =>
       @marker?.destroy()
       @modalPanel.hide() if @modalPanel.isVisible()
       @subscribeToActiveTextEditor()
-    @subscribeToActiveTextEditor()              
-        
+
     @subscriptions = new CompositeDisposable
     # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-text-editor', 'ruby-block:go-to-matching-line': => 
+    @subscriptions.add atom.commands.add 'atom-text-editor', 'ruby-block:go-to-matching-line': =>
       @goToMatchingLine()
 
   deactivate: ->
@@ -79,25 +78,25 @@ module.exports = RubyBlock =
     @activeItemSubscription.dispose()
     @cursorSubscription?.dispose()
     @rubyBlockView.destroy()
-    
+
   serialize: ->
     rubyBlockViewState: @rubyBlockView.serialize()
-    
-    
+
+
   getActiveTextEditor: ->
     atom.workspace.getActiveTextEditor()
-    
+
   goToMatchingLine: ->
     return atom.beep() unless @blockStartedRowNumber?
     editor = @getActiveTextEditor()
     row = editor.lineTextForBufferRow(@blockStartedRowNumber)
     firstCharPoint = row.search(/\S/)
     editor.setCursorBufferPosition([@blockStartedRowNumber, firstCharPoint])
-    
+
   subscribeToActiveTextEditor: ->
     @cursorSubscription?.dispose()
     editor = @getActiveTextEditor()
-    
+
     return unless editor?
     if editor.getRootScopeDescriptor().scopes[0].indexOf(@rubyRootScope) >= 0
       @cursorSubscription = editor.onDidChangeCursorPosition =>
@@ -106,40 +105,40 @@ module.exports = RubyBlock =
         @marker?.destroy()
         @searchForBlock()
       @searchForBlock()
-    
+
   searchForBlock: ->
     editor = @getActiveTextEditor()
     grammar = editor.getGrammar()
     cursor = editor.getLastCursor()
     currentRowNumber = cursor.getBufferRow()
-    
+
     # scope and word matches 'end'
-    return if cursor.getScopeDescriptor().scopes.indexOf(@rubyKeywordControlScope) is -1 or 
+    return if cursor.getScopeDescriptor().scopes.indexOf(@rubyKeywordControlScope) is -1 or
               @rubyKeywordControlNames.indexOf(editor.getWordUnderCursor()) is -1
-    
+
     @endBlockStack.push(editor.getWordUnderCursor)
-    
+
     # iterate lines above the cursor
     for rowNumber in [cursor.getBufferRow()..0]
       continue if editor.isBufferRowCommented(rowNumber)
-      
+
       if rowNumber is currentRowNumber
         prevWordBoundaryPos = cursor.getPreviousWordBoundaryBufferPosition()
         row = editor.getTextInBufferRange([[rowNumber, 0], prevWordBoundaryPos])
       else
         row = editor.lineTextForBufferRow(rowNumber)
-        
+
       tokens = grammar.tokenizeLine(row).tokens
       filteredTokens = (token for token,i in tokens when !token.value.match /^\s*$/)
-      
+
       startBlock = (token for token in filteredTokens when token.scopes.indexOf(@rubyDoScope) >= 0)
       if startBlock.length > 0
-        if token.value isnt @rubyDoBlockName or 
+        if token.value isnt @rubyDoBlockName or
            filteredTokens[0].value isnt @rubyWhileBlockName
-          @endBlockStack.pop() 
+          @endBlockStack.pop()
         if @endBlockStack.length is 0
           return @highlightBlock(rowNumber)
-      
+
       for token in filteredTokens by -1
         for scope in token.scopes
           if scope is @rubyKeywordControlScope and token.value is @rubyEndBlockName
@@ -147,7 +146,7 @@ module.exports = RubyBlock =
           else if @rubyStartBlockScopes.indexOf(scope) >= 0 and
                   @rubyStartBlockNames.indexOf(token.value) >= 0
             # Support assigning variable with a case statement
-            # e.g. 
+            # e.g.
             # var = case cond
             #       when 1 then 10
             #       end
@@ -159,7 +158,7 @@ module.exports = RubyBlock =
                    @rubyStartBlockNames.indexOf(filteredTokens[0].value) >= 0
                   @endBlockStack.pop()
                   break
-              
+
             if @endBlockStack.length is 0
               return @highlightBlock(rowNumber)
 
@@ -168,7 +167,7 @@ module.exports = RubyBlock =
     row = editor.lineTextForBufferRow(rowNumber)
     firstCharPoint = row.search(/\S/)
     @marker = editor.markBufferRange([[rowNumber, firstCharPoint], [rowNumber, row.length]])
-    
+
     @blockStartedRowNumber = rowNumber
     if atom.config.get('ruby-block.highlightLine')
       editor.decorateMarker(@marker, {type: 'highlight', class: 'ruby-block-highlight'})
@@ -177,4 +176,3 @@ module.exports = RubyBlock =
     if atom.config.get('ruby-block.showBottomPanel')
       @rubyBlockView.updateMessage(rowNumber)
       @modalPanel.show()
-    
