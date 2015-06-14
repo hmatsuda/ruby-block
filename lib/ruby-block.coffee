@@ -1,4 +1,6 @@
 {CompositeDisposable, Point} = require 'atom'
+_ = null
+RubyBlockView = null
 
 module.exports = RubyBlock =
   config:
@@ -57,10 +59,7 @@ module.exports = RubyBlock =
 
   activate: ->
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @activeItemSubscription = atom.workspace.observeActivePaneItem (activeItem) =>
-      @marker?.destroy()
-      @modalPanel.hide() if @modalPanel?.isVisible()
-      @subscribeToActiveTextEditor()
+    @activeItemSubscription = atom.workspace.observeActivePaneItem( => @subscribeToActiveTextEditor())
 
   deactivate: ->
     @marker?.destroy()
@@ -75,7 +74,7 @@ module.exports = RubyBlock =
     @rubyBlockView = null
 
   init: ->
-    RubyBlockView = require './ruby-block-view'
+    @loadClasses() unless RubyBlockView and _
     @rubyBlockView = new RubyBlockView
     @modalPanel = atom.workspace.addBottomPanel(item: @rubyBlockView.getElement(), visible: false, priority: 500)
 
@@ -90,6 +89,9 @@ module.exports = RubyBlock =
     editor.setCursorBufferPosition([@blockStartedRowNumber, firstCharPoint])
 
   subscribeToActiveTextEditor: ->
+    @marker?.destroy()
+    @modalPanel.hide() if @modalPanel?.isVisible()
+
     @editorSubscriptions?.dispose()
     editor = @getActiveTextEditor()
 
@@ -106,11 +108,14 @@ module.exports = RubyBlock =
         @goToMatchingLine()
     )
 
-    @editorSubscriptions.add editor.onDidChangeCursorPosition =>
+    # @editorSubscriptions.add(editor.onDidChangeCursorPosition(@debouncedCursorChangedCallback))
+    @editorSubscriptions.add(editor.onDidChangeCursorPosition(_.debounce( =>
+      return unless @getActiveTextEditor() is editor
       @blockStartedRowNumber = null
       @modalPanel.hide() if @modalPanel.isVisible()
       @marker?.destroy()
       @searchForBlock()
+    , 100)))
 
     @searchForBlock()
 
@@ -184,3 +189,7 @@ module.exports = RubyBlock =
     if atom.config.get('ruby-block.showBottomPanel')
       @rubyBlockView.updateMessage(rowNumber)
       @modalPanel.show()
+
+  loadClasses: ->
+    _ = require 'underscore-plus'
+    RubyBlockView = require './ruby-block-view'
