@@ -1,3 +1,6 @@
+## 0.3.4
+* Speed up start-up time ([@aki77])
+
 ## 0.3.3
 * Fix bug that highlights a wrong line when do statement
 
