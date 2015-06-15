@@ -21,3 +21,5 @@
 
 ## 0.1.0 - First Release
 * Port Emacs ruby-block.el and add few features
+
+[@aki77]: https://github.com/aki77
