@@ -3,6 +3,12 @@
   "main": "./lib/ruby-block",
   "version": "0.3.3",
   "description": "Atom highlight matching ruby block",
+  "keywords": [
+    "ruby",
+    "highlight",
+    "jump"
+  ],
+
   "repository": "https://github.com/hmatsuda/ruby-block",
   "license": "GPLv2",
   "engines": {
