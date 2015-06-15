@@ -1,4 +1,4 @@
-RubyBlock = require '../lib/ruby-block'
+_ = require 'underscore-plus'
 
 describe "RubyBlock", ->
   [workspaceElement, editor, editorElement, markers, lineNumbers, rubyBlockElement, bottomPanels] =  []
@@ -20,7 +20,9 @@ describe "RubyBlock", ->
 
   describe "when cursor is on the 'end'", ->
     beforeEach ->
+      spyOn(_._, "now").andCallFake -> window.now
       editor.setCursorBufferPosition [3, 0]
+      advanceClock(100)
       markers = editorElement.shadowRoot.querySelectorAll('.region')
       lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
       rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
@@ -39,6 +41,7 @@ describe "RubyBlock", ->
   describe "when cursor is not on the 'end'", ->
     beforeEach ->
       editor.setCursorBufferPosition [4, 0]
+      advanceClock(100)
       markers = editorElement.shadowRoot.querySelectorAll('.region')
       lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
       rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')

@@ -7,5 +7,5 @@
 
 # For more detailed documentation see
 # https://atom.io/docs/latest/advanced/keymaps
-'atom-text-editor':
+'atom-text-editor[data-grammar~="ruby"]:not([mini])':
   'ctrl-g b': 'ruby-block:go-to-matching-line'
