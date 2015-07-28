@@ -1,3 +1,6 @@
+## 0.3.5
+* Fix bug that highlighting doesn't work well when file is opened by language-rspec mode
+
 ## 0.3.4
 * Speed up start-up time ([@aki77])
 
