@@ -30,6 +30,8 @@ module.exports = RubyBlock =
     'case'
     'def'
     'begin'
+    'describe'
+    'context'
   ]
   rubyStartBlockScopes: [
      'keyword.control.ruby'
@@ -37,6 +39,7 @@ module.exports = RubyBlock =
      'keyword.control.class.ruby'
      'keyword.control.module.ruby'
      'keyword.control.def.ruby'
+     'meta.rspec.behaviour'
   ]
 
   rubyWhileBlockName: 'while'
