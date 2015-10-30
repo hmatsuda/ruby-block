@@ -9,7 +9,7 @@ Highlight matching ruby block when cursor is on the following keywords:
 
 ## Features
 - Highlight matching ruby block
-- Go to matching line (`ctrl-g b`)
+- `ctrl-g b` (Note that: ctrl-g and then press 'b' quickly) to go to matching ruby block start line when Atom points the cursor to above keywords.
 
 ## Requirements
 Enable the [`language-ruby`](https://atom.io/packages/language-ruby) package.
