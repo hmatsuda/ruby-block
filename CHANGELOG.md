@@ -1,3 +1,6 @@
+## 0.3.6
+* Fix duplication message
+
 ## 0.3.5
 * Fix bug that highlighting doesn't work well when file is opened by language-rspec mode
 
