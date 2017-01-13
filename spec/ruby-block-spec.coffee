@@ -1,58 +1,91 @@
 _ = require 'underscore-plus'
+{$} = require 'atom-space-pen-views'
+
+path = require 'path'
 
 describe "RubyBlock", ->
-  [workspaceElement, editor, editorElement, markers, lineNumbers, rubyBlockElement, bottomPanels] =  []
+  [workspaceElement, editor, editorView, editorElement, markers, lineNumbers, rubyBlockElement, bottomPanels] =  []
 
+  getResultDecorations = (editor, clazz, type) ->
+    if editor.decorationsStateForScreenRowRange?
+      resultDecorations = []
+      for id, decoration of editor.decorationsStateForScreenRowRange(0, editor.getLineCount())
+        if decoration.properties.class is clazz and decoration.properties.type is type
+          resultDecorations.push(decoration)
+    else
+      markerIdForDecorations = editor.decorationsForScreenRowRange(0, editor.getLineCount())
+      resultDecorations = []
+      for markerId, decorations of markerIdForDecorations
+        for decoration in decorations
+          resultDecorations.push decoration if decoration.getProperties().class is clazz and decoration.getProperties.type is type
+    resultDecorations
+    
   beforeEach ->
     workspaceElement = atom.views.getView(atom.workspace)
-    jasmine.attachToDOM(workspaceElement)
+    atom.project.setPaths([path.join(__dirname, 'fixtures')])
 
-    waitsForPromise -> atom.packages.activatePackage('language-ruby')
-    waitsForPromise -> atom.workspace.open('test.rb')
-    waitsForPromise ->
-      atom.packages.activatePackage('ruby-block').then (pkg) ->
-        rubyBlock = pkg.mainModule
-        atom.config.set 'ruby-block.highlightLineNumber', true
+    waitsForPromise -> 
+      atom.workspace.open('test.rb')
+      
+    waitsForPromise -> 
+      atom.packages.activatePackage('language-ruby')
 
     runs ->
+      jasmine.attachToDOM(workspaceElement)
       editor = atom.workspace.getActiveTextEditor()
-      editorElement = atom.views.getView(editor)
+      editorView = editor.getElement()
+
+      activationPromise = atom.packages.activatePackage("ruby-block").then ({mainModule}) ->
+        mainModule.createViews()
+        {findView} = mainModule
 
   describe "when cursor is on the 'end'", ->
-    beforeEach ->
-      spyOn(_._, "now").andCallFake -> window.now
-      editor.setCursorBufferPosition [3, 0]
-      advanceClock(100)
-      markers = editorElement.shadowRoot.querySelectorAll('.region')
-      lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
-      rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
-      bottomPanels = atom.workspace.getBottomPanels()
+    describe "when highlightLineNumber option is 'true'", ->
+      beforeEach ->
+        atom.config.set 'ruby-block.highlightLineNumber', true
+        spyOn(_._, "now").andCallFake -> window.now
+        editor.setCursorBufferPosition [3, 0]
+        advanceClock(100)
+        bottomPanels = atom.workspace.getBottomPanels()
+        
+      it 'highlights line', ->
+        expect(getResultDecorations(editor, 'ruby-block-highlight', 'highlight')).toHaveLength 1
+        
+      it 'highlights gutter', ->
+        expect(getResultDecorations(editor, 'ruby-block-highlight', 'line-number')).toHaveLength 1
+        
+      it 'shows view in bottom panel', ->
+        expect(workspaceElement.querySelector('.ruby-block')).toBe bottomPanels[0].item
 
-    it 'highlights line', ->
-      expect(markers.length).toBe 1
+    describe "when highlightLineNumber option is 'false'", ->
+      beforeEach ->
+        atom.config.set 'ruby-block.highlightLineNumber', false
+        spyOn(_._, "now").andCallFake -> window.now
+        editor.setCursorBufferPosition [3, 0]
+        advanceClock(100)
+        bottomPanels = atom.workspace.getBottomPanels()
+        
+      it 'highlights line', ->
+        expect(getResultDecorations(editor, 'ruby-block-highlight', 'highlight')).toHaveLength 1
 
-    it 'highlights gutter', ->
-      expect(lineNumbers.length).toBe 1
+      it 'highlights gutter', ->
+        expect(getResultDecorations(editor, 'ruby-block-highlight', 'line-number')).toHaveLength 0
 
-    it 'shows view in bottom panel', ->
-      expect(rubyBlockElement).toExist
-      expect(bottomPanels[0].isVisible()).toBe true
+      it 'shows view in bottom panel', ->
+        expect(workspaceElement.querySelector('.ruby-block')).toBe bottomPanels[0].item
+
 
   describe "when cursor is not on the 'end'", ->
     beforeEach ->
       editor.setCursorBufferPosition [4, 0]
       advanceClock(100)
-      markers = editorElement.shadowRoot.querySelectorAll('.region')
-      lineNumbers = editorElement.shadowRoot.querySelectorAll('.line-number.ruby-block-highlight')
-      rubyBlockElement = workspaceElement.querySelector('.panel-bottom .ruby-block')
-      bottomPanels = atom.workspace.getBottomPanels()
 
-    it "doesn't highlight line", ->
-      expect(markers.length).toBe 0
+    it 'highlights line', ->
+      expect(getResultDecorations(editor, 'ruby-block-highlight', 'highlight')).toHaveLength 0
 
-    it "doesn't highlight gutter", ->
-      expect(lineNumbers.length).toBe 0
+    it 'highlights gutter', ->
+      expect(getResultDecorations(editor, 'ruby-block-highlight', 'line-number')).toHaveLength 0
 
     it 'shows view in bottom panel', ->
-      expect(rubyBlockElement).toExist
-      expect(bottomPanels[0].isVisible()).toBe false
+      expect(bottomPanels).toHaveLength 0
+      

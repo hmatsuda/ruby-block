@@ -11,9 +11,10 @@
   "repository": "https://github.com/hmatsuda/ruby-block",
   "license": "GPLv2",
   "engines": {
-    "atom": ">=0.174.0 <2.0.0"
+    "atom": ">=1.13.0 <2.0.0"
   },
   "dependencies": {
-    "underscore-plus": "1.x"
+    "underscore-plus": "1.x",
+    "atom-space-pen-views": "^2.1.0"
   }
 }
