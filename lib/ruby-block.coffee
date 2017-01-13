@@ -47,8 +47,7 @@ module.exports = RubyBlock =
   rubyEndBlockName: 'end'
 
   rubyKeywordControlScope: 'keyword.control.ruby'
-  rubyKeywordControlNames: [
-    'end'
+  rubyBetweenBlockNames: [
     'elsif'
     'else'
     'when'
@@ -57,8 +56,6 @@ module.exports = RubyBlock =
   ]
 
   rubyDoScope: 'keyword.control.start-block.ruby'
-
-  endBlockStack: []
 
   activate: ->
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
@@ -124,15 +121,35 @@ module.exports = RubyBlock =
 
   searchForBlock: ->
     editor = @getActiveTextEditor()
+    cursor = editor.getLastCursor()
+
+    # scope and word matches 'end'
+    if cursor.getScopeDescriptor().scopes.indexOf(@rubyKeywordControlScope) isnt -1
+      if @rubyStartBlockNames.indexOf(editor.getWordUnderCursor()) isnt -1
+        @searchForEnd()
+      else if editor.getWordUnderCursor() is @rubyEndBlockName
+        @searchForBeginning()
+      else if @rubyBetweenBlockNames.indexOf(editor.getWordUnderCursor()) isnt -1
+        @searchForEnd()
+        @searchForBeginning()
+      
+  searchForEnd: ()->
+    editor = @getActiveTextEditor()
     grammar = editor.getGrammar()
     cursor = editor.getLastCursor()
     currentRowNumber = cursor.getBufferRow()
+    
+    return
 
-    # scope and word matches 'end'
-    return if cursor.getScopeDescriptor().scopes.indexOf(@rubyKeywordControlScope) is -1 or
-              @rubyKeywordControlNames.indexOf(editor.getWordUnderCursor()) is -1
+  searchForBeginning: ()->
+    editor = @getActiveTextEditor()
+    grammar = editor.getGrammar()
+    cursor = editor.getLastCursor()
+    currentRowNumber = cursor.getBufferRow()
+    endBlockStack = []
 
-    @endBlockStack.push(editor.getWordUnderCursor)
+    
+    endBlockStack.push(editor.getWordUnderCursor)
 
     # iterate lines above the cursor
     for rowNumber in [cursor.getBufferRow()..0]
@@ -151,14 +168,14 @@ module.exports = RubyBlock =
       if startBlock.length > 0
         if token.value isnt @rubyDoBlockName or
            filteredTokens[0].value isnt @rubyWhileBlockName
-          @endBlockStack.pop()
-        if @endBlockStack.length is 0
+          endBlockStack.pop()
+        if endBlockStack.length is 0
           return @highlightBlock(rowNumber)
 
       for token in filteredTokens by -1
         for scope in token.scopes
           if scope is @rubyKeywordControlScope and token.value is @rubyEndBlockName
-            @endBlockStack.push(scope.value)
+            endBlockStack.push(scope.value)
           else if @rubyStartBlockScopes.indexOf(scope) >= 0 and
                   @rubyStartBlockNames.indexOf(token.value) >= 0
             # Support assigning variable with a case statement
@@ -167,17 +184,18 @@ module.exports = RubyBlock =
             #       when 1 then 10
             #       end
             if token.value is 'case'
-              @endBlockStack.pop()
+              endBlockStack.pop()
             else
               for firstTokenScope in filteredTokens[0].scopes
                 if @rubyStartBlockScopes.indexOf(firstTokenScope) >= 0 and
                    @rubyStartBlockNames.indexOf(filteredTokens[0].value) >= 0
-                  @endBlockStack.pop()
+                  endBlockStack.pop()
                   break
 
-            if @endBlockStack.length is 0
+            if endBlockStack.length is 0
               return @highlightBlock(rowNumber)
 
+    
   highlightBlock: (rowNumber)->
     editor = @getActiveTextEditor()
     row = editor.lineTextForBufferRow(rowNumber)
