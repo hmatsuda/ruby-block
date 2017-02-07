@@ -17,7 +17,6 @@ module.exports = RubyBlock =
 
   rubyBlockView: null
   modalPanel: null
-  rubyRootScope: 'source.ruby'
 
   rubyStartBlockNames: [
     'for'
@@ -33,20 +32,6 @@ module.exports = RubyBlock =
     'describe'
     'context'
   ]
-  rubyStartBlockScopes: [
-     'keyword.control.ruby'
-     'keyword.control.start-block.ruby'
-     'keyword.control.class.ruby'
-     'keyword.control.module.ruby'
-     'keyword.control.def.ruby'
-     'meta.rspec.behaviour'
-  ]
-
-  rubyWhileBlockName: 'while'
-  rubyDoBlockName: 'do'
-  rubyEndBlockName: 'end'
-
-  rubyKeywordControlScope: 'keyword.control.ruby'
   rubyBetweenBlockNames: [
     'elsif'
     'else'
@@ -55,6 +40,16 @@ module.exports = RubyBlock =
     'ensure'
   ]
 
+  rubyStartBlockScopes: [
+     'keyword.control.ruby'
+     'keyword.control.start-block.ruby'
+     'keyword.control.class.ruby'
+     'keyword.control.module.ruby'
+     'keyword.control.def.ruby'
+     'meta.rspec.behaviour'
+  ]
+  rubyKeywordControlScope: 'keyword.control.ruby'
+  rubyRootScope: 'source.ruby'
   rubyDoScope: 'keyword.control.start-block.ruby'
 
   activate: ->
@@ -127,29 +122,47 @@ module.exports = RubyBlock =
     if cursor.getScopeDescriptor().scopes.indexOf(@rubyKeywordControlScope) isnt -1
       if @rubyStartBlockNames.indexOf(editor.getWordUnderCursor()) isnt -1
         @searchForEnd()
-      else if editor.getWordUnderCursor() is @rubyEndBlockName
-        @searchForBeginning()
-      else if @rubyBetweenBlockNames.indexOf(editor.getWordUnderCursor()) isnt -1
-        @searchForEnd()
-        @searchForBeginning()
+      # else if editor.getWordUnderCursor() is 'end'
+      #   @searchForBeginning()
+      # else if @rubyBetweenBlockNames.indexOf(editor.getWordUnderCursor()) isnt -1
+      #   @searchForEnd()
+      #   @searchForBeginning()
       
   searchForEnd: ()->
     editor = @getActiveTextEditor()
     grammar = editor.getGrammar()
     cursor = editor.getLastCursor()
     currentRowNumber = cursor.getBufferRow()
-    
-    return
+    blockStack = []
+
+    for rowNumber in [cursor.getBufferRow()..editor.getLastBufferRow()]
+      continue if editor.isBufferRowCommented(rowNumber)
+
+      if rowNumber is currentRowNumber
+        prevWordBoundaryPos = cursor.getPreviousWordBoundaryBufferPosition()
+        row = editor.getTextInBufferRange([[rowNumber, 0], prevWordBoundaryPos])
+        console.log row
+      else
+        row = editor.lineTextForBufferRow(rowNumber)
+
+      filteredTokens = (token for token,i in grammar.tokenizeLine(row).tokens when !token.value.match /^\s*$/)
+      for token in filteredTokens by -1
+        if token.value is 'end'
+          if blockStack.length is 0
+            return @highlightBlock(rowNumber)
+          else
+            blockStack.pop()
+        else if @rubyStartBlockNames.indexOf(token.value) >= 0
+          blockStack.push(token.value)
+
 
   searchForBeginning: ()->
     editor = @getActiveTextEditor()
     grammar = editor.getGrammar()
     cursor = editor.getLastCursor()
     currentRowNumber = cursor.getBufferRow()
-    endBlockStack = []
-
     
-    endBlockStack.push(editor.getWordUnderCursor)
+    endBlockStack = [editor.getWordUnderCursor]
 
     # iterate lines above the cursor
     for rowNumber in [cursor.getBufferRow()..0]
@@ -166,15 +179,15 @@ module.exports = RubyBlock =
 
       startBlock = (token for token in filteredTokens when token.scopes.indexOf(@rubyDoScope) >= 0)
       if startBlock.length > 0
-        if token.value isnt @rubyDoBlockName or
-           filteredTokens[0].value isnt @rubyWhileBlockName
+        if token.value isnt 'do' or
+           filteredTokens[0].value isnt 'while'
           endBlockStack.pop()
         if endBlockStack.length is 0
           return @highlightBlock(rowNumber)
 
       for token in filteredTokens by -1
         for scope in token.scopes
-          if scope is @rubyKeywordControlScope and token.value is @rubyEndBlockName
+          if scope is @rubyKeywordControlScope and token.value is 'end'
             endBlockStack.push(scope.value)
           else if @rubyStartBlockScopes.indexOf(scope) >= 0 and
                   @rubyStartBlockNames.indexOf(token.value) >= 0
