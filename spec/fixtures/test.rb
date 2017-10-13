@@ -3,15 +3,23 @@
   puts n
 end
 
+var = [1,2,3].each do |n|
+  puts n
+end
+
 version :default do
   # do
 end
+
 [1,2].each do |n|; puts n; end #aa
 
 for n in 1..3 do
   puts n
 end
 
+var = for n in 1..3 do
+  puts n
+end
 
 if true
   if true
@@ -20,7 +28,7 @@ if true
 elsif true
   # do
 else
-  #do 
+  #do
 end
 
 unless true
@@ -31,8 +39,8 @@ end
 if true
   return if true
   return unless true
-  var = if 1 == 1 ? "Yes" : "No" 
-  var = unless 1 == 1 ? "Yes" : "No" 
+  var = if 1 == 1 ? "Yes" : "No"
+  var = unless 1 == 1 ? "Yes" : "No"
 end
 
 until true
@@ -43,6 +51,12 @@ if true
   while true do
     # do
   end
+end
+
+var = if true
+  # do
+else
+  # do
 end
 
 class Animal
@@ -76,6 +90,14 @@ def func
 end
 
 begin
+  #do_something
+rescue
+  #recover
+ensure
+  #must_to_do
+end
+
+var = begin
   #do_something
 rescue
   #recover

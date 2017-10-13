@@ -166,7 +166,7 @@ module.exports = RubyBlock =
             # var = case cond
             #       when 1 then 10
             #       end
-            if token.value is 'case'
+            if token.value in ['case', 'begin', 'if']
               @endBlockStack.pop()
             else
               for firstTokenScope in filteredTokens[0].scopes
